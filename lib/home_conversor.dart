@@ -174,6 +174,8 @@ class _HomeConverState extends State<HomeConver> {
     realControl.clear();
     dolarControl.clear();
     euroControl.clear();
+    yuanControl.clear();
+    wonControl.clear();
   }
 }
 
@@ -182,7 +184,7 @@ Future<Map> getData() async {
   //* https://docs.awesomeapi.com.br/api-de-moedas
 
   const requestApi =
-      "https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,CNY-BRL,KRW-BRL ";
+      "https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,CNY-BRL,KRW-BRL";
   var response = await http.get(Uri.parse(requestApi));
   return jsonDecode(response.body);
 
