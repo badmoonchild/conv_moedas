@@ -14,15 +14,21 @@ class _HomeConverState extends State<HomeConver> {
   final realControl = TextEditingController();
   final dolarControl = TextEditingController();
   final euroControl = TextEditingController();
+  final yuanControl = TextEditingController(); // moeda chinesa
+  final wonControl = TextEditingController(); // moeda coreana
 
   double dolar = 0;
   double euro = 0;
+  double yuan = 0; // nova moeda chinesa
+  double won = 0; // nova moeda coreana
 
   @override
   void dispose() {
     realControl.dispose();
     dolarControl.dispose();
     euroControl.dispose();
+    yuanControl.dispose(); // adap nova moeda
+    wonControl.dispose(); //
     super.dispose();
   }
 
@@ -39,6 +45,8 @@ class _HomeConverState extends State<HomeConver> {
               if (snapshot.connectionState == ConnectionState.done) {
                 dolar = double.parse(snapshot.data!['USDBRL']['bid']);
                 euro = double.parse(snapshot.data!['EURBRL']['bid']);
+                yuan = double.parse(snapshot.data!['CNYBRL']['bid']); // adap
+                won = double.parse(snapshot.data!['KRWBRL']['bid']); //adap
                 // dolar = snapshot.data!['USD']['buy'];
                 // euro = snapshot.data!['EUR']['buy'];
                 return SingleChildScrollView(
@@ -59,6 +67,10 @@ class _HomeConverState extends State<HomeConver> {
                       const SizedBox(height: 20),
                       currencyTextField(
                           'Euros', '€ ', euroControl, _convertEuro),
+                      const SizedBox(height: 20), // mudando aqui
+                      currencyTextField('Yuan', '¥', yuanControl, _convertYuan),
+                      const SizedBox(height: 20), // mudando aqui
+                      currencyTextField('Won', '₩', wonControl, _convertWon),
                     ],
                   ),
                 );
@@ -101,6 +113,8 @@ class _HomeConverState extends State<HomeConver> {
     double real = double.parse(text);
     dolarControl.text = (real / dolar).toStringAsFixed(2);
     euroControl.text = (real / euro).toStringAsFixed(2);
+    yuanControl.text = (real / yuan).toStringAsFixed(2); // nova moedinha chinesa p ajudar o governo
+    wonControl.text = (real / won).toStringAsFixed(2);  // nova moedinha kpop 
   }
 
   void _convertDolar(String text) {
@@ -112,6 +126,8 @@ class _HomeConverState extends State<HomeConver> {
     double dolar = double.parse(text);
     realControl.text = (this.dolar * dolar).toStringAsFixed(2);
     euroControl.text = ((this.dolar * dolar) / euro).toStringAsFixed(2);
+    yuanControl.text = ((this.dolar * dolar) / yuan).toStringAsFixed(2); // novo
+    wonControl.text = ((this.dolar * dolar) / won).toStringAsFixed(2); // novo 
   }
 
   void _convertEuro(String text) {
@@ -123,7 +139,36 @@ class _HomeConverState extends State<HomeConver> {
     double euro = double.parse(text);
     realControl.text = (this.euro * euro).toStringAsFixed(2);
     dolarControl.text = ((this.euro * euro) / dolar).toStringAsFixed(2);
+    yuanControl.text = ((this.euro * euro) / yuan).toStringAsFixed(2); // novo 
+    wonControl.text = ((this.euro * euro) / won).toStringAsFixed(2); // novo 
   }
+
+  void _convertYuan(String text) { // funçao moedinha Chinesa
+    if (text.trim().isEmpty) {
+      _clearFields();
+      return;
+    }
+
+    double yuan= double.parse(text);
+    realControl.text = (this.yuan * yuan).toStringAsFixed(2);
+    euroControl.text = ((this.yuan * yuan) / euro).toStringAsFixed(2);
+    dolarControl.text = ((this.yuan * yuan) / dolar).toStringAsFixed(2); // novo 
+    wonControl.text = ((this.yuan * yuan) / won).toStringAsFixed(2); // novo 
+  }
+
+  void _convertWon(String text) { // funçao moedinha coreana
+    if (text.trim().isEmpty) {
+      _clearFields();
+      return;
+    }
+
+    double won= double.parse(text);
+    realControl.text = (this.won * won).toStringAsFixed(2);
+    euroControl.text = ((this.won * won) / euro).toStringAsFixed(2);
+    dolarControl.text = ((this.won * won) / dolar).toStringAsFixed(2); // novo 
+    yuanControl.text = ((this.won * won) / yuan).toStringAsFixed(2); // novo 
+  }
+
 
   void _clearFields() {
     realControl.clear();
@@ -137,7 +182,7 @@ Future<Map> getData() async {
   //* https://docs.awesomeapi.com.br/api-de-moedas
 
   const requestApi =
-      "https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL";
+      "https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,CNY-BRL,KRW-BRL ";
   var response = await http.get(Uri.parse(requestApi));
   return jsonDecode(response.body);
 
@@ -173,5 +218,8 @@ Future<Map> getData() async {
   };
 
   return jsonDecode(jsonEncode(response));
+
+  <BRL-CNY>Real Brasileiro/Yuan Chinês</BRL-CNY>
+  <BRL-KRW>Real Brasileiro/Won Sul-Coreano</BRL-KRW>
  */
 }
